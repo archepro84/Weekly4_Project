@@ -16,9 +16,19 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             type: DataTypes.INTEGER,
         },
-        postId: DataTypes.INTEGER,
-        userId: DataTypes.INTEGER,
-        comment: DataTypes.STRING
+        postId: {
+            required: true,
+            type: DataTypes.INTEGER,
+        },
+        userId: {
+            required: true,
+            type: DataTypes.INTEGER,
+        },
+        comment: {
+            required: true,
+            type: DataTypes.STRING,
+        }
+
     }, {
         sequelize,
         modelName: 'Comments',

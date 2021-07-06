@@ -15,58 +15,56 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-    <!--    Include CSS -->
-    <link href="meStyleSheet.css" rel="stylesheet"/>
+
 
     <!--    JQuery-->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 
+    <!--    Javascript-->
+    <script src="/htmlApi.js"></script>
+
+    <!--    Include CSS -->
+    <link href="/meStyleSheet.css" rel="stylesheet"/>
+
 </head>
 <style>
 
-
 </style>
 <script>
+
     $(document).ready(function () {
-        console.log("Ready Clear Login Html");
     });
 
-    function loginEvent() {
-        const nickname = $('#nickname').val()
-        const password = $('#password').val()
-        console.log(nickname, password);
-        $.ajax({
-            type: "POST",
-            url: "/api/login",
-            data: {nickname, password},
-            success: function (response) {
-                localStorage.setItem("token", response.token)
-                // console.log(response);
-                location.href = "/"
-            },
-            error: function (error) {
-                alert(error.responseJSON.errorMessage)
-            },
-        });
+
+    function modifyPost() {
+
     }
 
 </script>
 <body>
 
 <div>
-    <div class="card-body">
-        <div class="form-group">
-            <label for="nickname">Nickname</label>
-            <input type="email" class="form-control" id="nickname" aria-describedby="emailHelp"
-                   placeholder="Enter Nickname">
+
+    <div class="post-body">
+        <div>
+            <button type="button" class="btn btn-primary" onclick="modifyPost()">수정</button>
+            <button type="button" class="btn btn-secondary" onclick="location.href='/'">취소</button>
         </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" placeholder="Password">
+
+        <label for="alert_title">Content</label>
+        <div class="alert alert-secondary" role="alert" id="alert_title">
+            {{post.title}}
         </div>
-        <button class="btn btn-outline-primary" onclick="loginEvent()">로그인</button>
-        <button class="btn btn-outline-primary" onclick="location.href='/sign'">회원가입</button>
+
+        <div class="form-group">
+            <label for="content">Content</label>
+            <textarea class="form-control" id="content" rows="10" disabled>{{post.content}}</textarea>
+        </div>
+
+
     </div>
+
+
 </div>
 
 

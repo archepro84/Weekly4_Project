@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <!--    BootStrap Library-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+
+    <!--    JQuery-->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+    <!--    Javascript-->
+    <script src="/htmlApi.js"></script>
+
+    <!--    Include CSS -->
+    <link href="/meStyleSheet.css" rel="stylesheet"/>
+
+</head>
+<style>
+
+</style>
+<script>
+    $(document).ready(function () {
+        if (localStorage.getItem("token")) {
+            $('#commentWriteBody').removeClass('disabledButton')
+        }
+        get_comment()
+    });
+
+    function get_comment() {
+        const postId = location.pathname.split("/")[2]
+        $('#comment_body').empty();
+
+
+        $.ajax({
+            type: "GET",
+            url: `/api/comment/${postId}`,
+            data: {},
+            success: function (response) {
+                console.log(response['comments']);
+                for (const commentObject of response.comments) {
+                    makeComment(commentObject)
+                }
+
+            },
+            error: function (error) {
+                // console.log(error);
+                console.log(error.responseJSON.errorMessage);
+
+            },
+        });
+    }
+
+    function makeComment(commentObject) {
+        const {commentId, nickname, comment} = commentObject;
+
+        const temp_html = `<tr>
+                <td scope="col">${nickname}</td>
+                <td scope="col" id="Comment${commentId}">${comment}</td>
+            </tr>`
+        $('#commentTableBody').append(temp_html)
+    }
+
+    function writeComment() {
+        const comment = $('#comment').val()
+        const postId = location.pathname.split("/")[2]
+        $.ajax({
+            type: "POST",
+            url: `/api/write/comment/${postId}`,
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            data: {comment},
+            success: function (response) {
+                console.log(`writeComment:  ${response}`);
+            },
+            error: function (error) {
+                console.log(`writeComment:  ${error}`);
+            },
+        });
+    }
+
+</script>
+<body>
+
+<div>
+
+    <div class="post-body">
+        <div>
+            <button type="button" class="btn btn-primary" onclick="modifyPost()">수정</button>
+            <button type="button" class="btn btn-secondary" onclick="location.href='/'">취소</button>
+        </div>
+
+        <label for="alert_title">Content</label>
+        <div class="alert alert-secondary" role="alert" id="alert_title">
+            {{post.title}}
+        </div>
+
+        <div class="form-group">
+            <label for="content">Content</label>
+            <textarea class="form-control" id="content" rows="10" disabled>{{post.content}}</textarea>
+        </div>
+
+        <table class="table">
+            <thead class="thead-light">
+            <colgroup>
+                <col style="width:15%"/>
+                <col style="width:85%"/>
+            </colgroup>
+            </thead>
+            <tbody id="commentTableBody">
+
+            </tbody>
+        </table>
+
+        <div/>
+        <div class="input-group mb-3 disabledButton" id="commentWriteBody">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">Comment</span>
+            </div>
+            <input type="text" class="form-control" placeholder="Comment" aria-label="Username"
+                   aria-describedby="basic-addon1" id="comment">
+            <button type="button" class="btn btn-primary" onclick="writeComment()">작성</button>
+
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

@@ -15,11 +15,15 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-    <!--    Include CSS -->
-    <link href="meStyleSheet.css" rel="stylesheet"/>
 
     <!--    JQuery-->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+    <!--    Javascript-->
+    <script src="/htmlApi.js"></script>
+
+    <!--    Include CSS -->
+    <link href="/meStyleSheet.css" rel="stylesheet"/>
 
 </head>
 <style>
@@ -27,6 +31,13 @@
 
 </style>
 <script>
+    if (localStorage.getItem("token")) {
+        getSelf(function () {
+            alert("이미 로그인이 되어 있습니다.");
+            window.location.replace("/");
+        })
+    }
+
 
     function signEvent() {
         const nickname = $('#nickname').val();
@@ -44,7 +55,6 @@
             data: {nickname, password, confirm},
             success: function (response) {
                 location.href = "/"
-
             },
             error: function (error) {
                 alert(error.responseJSON.errorMessage);

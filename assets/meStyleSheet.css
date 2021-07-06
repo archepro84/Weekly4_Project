@@ -10,3 +10,9 @@
     margin: 0 auto;
 
 }
+
+.disabledButton {
+    /*display:block;*/
+    pointer-events: none;
+    opacity: 0.4;
+}

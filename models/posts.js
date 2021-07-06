@@ -16,8 +16,18 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             type: DataTypes.INTEGER,
         },
-        title: DataTypes.STRING,
-        content: DataTypes.STRING
+        userId: {
+            required: true,
+            type: DataTypes.INTEGER,
+        },
+        title: {
+            required: true,
+            type: DataTypes.STRING
+        },
+        content: {
+            required: true,
+            type: DataTypes.STRING
+        },
     }, {
         sequelize,
         modelName: 'Posts',
@@ -25,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     Posts.associate = function (models) {
         models.Posts.hasMany(models.Users, {
             foreignKey: 'userId',
-            onDelete:'cascade',
+            onDelete: 'cascade',
         });
     };
     return Posts;
