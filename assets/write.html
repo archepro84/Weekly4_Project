@@ -28,45 +28,45 @@
 </style>
 <script>
     $(document).ready(function () {
-        console.log("Ready Clear Login Html");
     });
 
-    function loginEvent() {
-        const nickname = $('#nickname').val()
-        const password = $('#password').val()
-        console.log(nickname, password);
+    function writePost() {
+        const title = $('#title').val();
+        const content = $('#content').val();
         $.ajax({
             type: "POST",
-            url: "/api/login",
-            data: {nickname, password},
+            url: "/api/write",
+            data: {title, content},
             success: function (response) {
-                localStorage.setItem("token", response.token)
-                // console.log(response);
-                location.href = "/"
+                console.log(`writePost : ${response}`);
             },
             error: function (error) {
-                alert(error.responseJSON.errorMessage)
+
             },
         });
     }
+
 
 </script>
 <body>
 
 <div>
-    <div class="card-body">
+
+    <div class="post-body">
         <div class="form-group">
-            <label for="nickname">Nickname</label>
-            <input type="email" class="form-control" id="nickname" aria-describedby="emailHelp"
-                   placeholder="Enter Nickname">
+            <label for="title">Title</label>
+            <input class="form-control" id="title" placeholder="title">
         </div>
+
         <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" placeholder="Password">
+            <label for="content">Content</label>
+            <textarea class="form-control" id="content" rows="10"></textarea>
         </div>
-        <button class="btn btn-outline-primary" onclick="loginEvent()">로그인</button>
-        <button class="btn btn-outline-primary" onclick="location.href='/sign'">회원가입</button>
+        <button type="button" class="btn btn-primary" onclick="writePost()">게시글 작성</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='/post'">취소</button>
     </div>
+
+
 </div>
 
 

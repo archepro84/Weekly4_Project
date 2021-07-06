@@ -22,5 +22,11 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Posts',
     });
+    Posts.associate = function (models) {
+        models.Posts.hasMany(models.Users, {
+            foreignKey: 'userId',
+            onDelete:'cascade',
+        });
+    };
     return Posts;
 };

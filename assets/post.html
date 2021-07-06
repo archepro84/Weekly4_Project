@@ -41,21 +41,39 @@
             url: "/api/posts",
             data: {},
             success: function (response) {
-                for (const x of response.posts) {
-                    console.log();
+                console.log(response);
+                for (const post of response.posts) {
+                    make_tr(post)
                 }
             },
             error: function (error) {
-
+                console.log(`에러가 발생하였습니다.`);
             },
         });
+    }
+
+    function write_post() {
+        location.href = "/write"
+    }
+
+    function make_tr(post) {
+        const {postId, nickname, title, content} = post;
+        const temp_html = `<tr>
+                <th scope="row">${postId}</th>
+                <td>${nickname}</td>
+                <td>${title}</td>
+            </tr>`
+        $('#table_body').append(temp_html);
     }
 
 </script>
 <body>
 
 <div>
+
     <div class="post-body">
+        <button type="button" class="btn btn-dark" onclick="write_post()">게시글 작성</button>
+        <button type="button" class="btn btn-dark" onclick="location.href ='/login'">로그인</button>
         <!--        <div class="form-group">-->
         <!--            <label for="nickname">Nickname</label>-->
         <!--            <input type="email" class="form-control" id="nickname" aria-describedby="emailHelp"-->
@@ -69,6 +87,11 @@
         <!--        <button class="btn btn-outline-primary" onclick="signEvent()">회원가입</button>-->
         <table class="table">
             <thead class="thead-light">
+            <colgroup>
+                <col style="width:10%"/>
+                <col style="width:15%"/>
+                <col style="width:75%"/>
+            </colgroup>
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">User</th>
@@ -76,21 +99,17 @@
             </tr>
             </thead>
             <tbody id="table_body">
-            <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Larry</td>
-                <td>the Bird</td>
-            </tr>
+<!--            <tr>-->
+<!--                <th scope="row">1</th>-->
+<!--                <td>Mark</td>-->
+<!--                <td>Otto</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <th scope="row">2</th>-->
+<!--                <td>Jacob</td>-->
+<!--                <td>Thornton</td>-->
+<!--            </tr>-->
+
             </tbody>
         </table>
     </div>

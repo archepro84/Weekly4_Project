@@ -6,6 +6,18 @@ const jwt = require("jsonwebtoken");
 const {Users, Posts, Comments} = require("./models");
 const Joi = require("joi");
 const path = require("path")
+const mysql = require("mysql");
+const authMiddleware = require("./middlewares/auth_middleware")
+
+const connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "1234",
+    database: "database_weekly4",
+});
+
+connection.connect();
+
 
 const app = express();
 const http = Http.createServer(app);
@@ -83,7 +95,7 @@ router.post('/login', async (req, res) => {
     try {
         const {nickname, password} = await loginSchema.validateAsync(req.body);
 
-        const user = await Users.findAll({
+        const user = await Users.findOne({
             where: {
                 [Op.and]: [{nickname}, {password}]
             }
@@ -95,7 +107,11 @@ router.post('/login', async (req, res) => {
             return;
         }
 
-        res.send({result: "/api/login success"})
+        const token = jwt.sign( {userId:user.userId}, "weekly4_Project_key")
+        console.log(token);
+        res.send({token})
+
+        // res.send({result: "/api/login success"})
     } catch (err) {
         res.status(400).send({
             errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
@@ -103,31 +119,63 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/posts', async (req, res) => {
-    // TODO 만약 DB가 커져 더많은 데이터를 가지고 있을경우, 과부화를 어떻게 줄일 수 있을까?
-    // TODO 
-    const posts = await Posts.findAll();
-    console.log(posts);
+router.get('/posts', async (req, res) => {
+    // TODO DB를 많이 참조하지 않을까?
+    // // 앞에 10개는 받환받지 않고 넘긴 뒤 2개의 항목만 반환한다.
+    // Project.findAll({ offset: 10, limit: 2 })
 
-    res.send({posts})
+    const userId_join = `SELECT p.postId, p.userId, u.nickname, p.title, p.content, p.createdAt, p.updatedAt
+    FROM Posts AS p
+    JOIN Users AS u
+    ON p.userId = u.userId
+    Order By p.postId DESC`;
+
+    connection.query(userId_join, function (error, posts, fields) {
+        if (error) {
+            console.log(error);
+            return;
+        }
+        res.send({posts})
+
+    });
+
+    // for (const x of posts) {
+    //     console.log(x['dataValues']['title']);
+    //     // console.log(x['dataValues']["Users"][0]['dataValues']['nickname']);
+    // }
+    // res.send({posts})
+});
+
+router.post('/write', authMiddleware, async (req, res) => {
+    const {title, content} = req.body;
+    console.log(title, content);
+    // TODO jwt를 이용해 현재 접속한 유저의 nickname을 가지고 와야한다.
+    // await Posts.create({title, content})
+    res.send({result: "성공적이였습니다."})
 });
 
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/assets/login.html'))
+    res.sendFile(path.join(__dirname, '/assets/post.html'))
+    // res.sendFile(path.join(__dirname, '/assets/login.html'))
 });
 
-// app.get('/login', (req, res) => {
-//     res.sendFile(path.join(__dirname, '/assets/login.html'))
-// });
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, '/assets/login.html'))
+});
 
 app.get('/sign', (req, res) => {
     res.sendFile(path.join(__dirname, '/assets/sign.html'))
 });
 
-app.get('/post', (req, res) => {
-    res.sendFile(path.join(__dirname, '/assets/post.html'))
+// app.get('/post', (req, res) => {
+//     res.sendFile(path.join(__dirname, '/assets/post.html'))
+// });
+
+app.get('/write', (req, res) => {
+    res.sendFile(path.join(__dirname, '/assets/write.html'))
 });
+
 
 app.use("/api", express.urlencoded({extended: false}), router);
 app.use(express.static("assets"));
