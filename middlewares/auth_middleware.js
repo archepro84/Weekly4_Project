@@ -1,17 +1,18 @@
 const jwt = require("jsonwebtoken");
 const {Users} = require("../models");
+const tokenKey = "weekly4_Project_key"
 
 module.exports = (req, res, next) => {
-    const {authorization} = req.headers;
-    const [tokenType, tokenValue] = authorization.split(' ');
-    if (tokenType !== 'Bearer') {
-        res.status(401).send({
-            errorMessage: "로그인 후 사용하세요.",
-        });
-        return;
-    }
     try {
-        const {userId} = jwt.verify(tokenValue, "weekly4_Project_key");
+        const {authorization} = req.headers;
+        const [tokenType, tokenValue] = authorization.split(' ');
+        if (tokenType !== 'Bearer') {
+            res.status(401).send({
+                errorMessage: "로그인 후 사용하세요.",
+            });
+            return;
+        }
+        const {userId} = jwt.verify(tokenValue, tokenKey);
         // console.log(userId);
         //promise
         Users.findByPk(userId)

@@ -19,19 +19,6 @@ router.get('/:postId', async (req, res) => {
             return posts['dataValues']
         });
 
-    // TODO Comment를 가지고 올 때 Join 문으로 nickname을 같이 가지고 와야한다.
-    // TODO 그렇다면 get comment 함수로 가져오는게 좋지 않을까?
-    // const comment = await Comments.findAll({
-    //     where: {
-    //         postId: postId
-    //     }
-    // })
-    //
-    //
-    // for (const x of comment) {
-    //     console.log(x['dataValues']);
-    //
-    // }
 
     res.render("post",{post})
 });

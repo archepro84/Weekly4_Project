@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+
     <!--    BootStrap Library-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -16,6 +17,8 @@
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
 
+    <!-- Font Awesome CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
     <!--    JQuery-->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -31,50 +34,155 @@
 
 </style>
 <script>
+    // TODO userId를 html을 실행시킬 때 마다 무조건 가져와야 하는걸까?
+    // TODO 서버와 통신이 너무 많아지는게 아닌가?
+
     $(document).ready(function () {
         if (localStorage.getItem("token")) {
             $('#commentWriteBody').removeClass('disabledButton')
         }
         get_comment()
+
     });
 
     function get_comment() {
+        //URL이 바뀔경우 이것도 변경해줘야한다.
         const postId = location.pathname.split("/")[2]
+        const token = localStorage.getItem("token");
         $('#comment_body').empty();
 
-
         $.ajax({
-            type: "GET",
-            url: `/api/comment/${postId}`,
-            data: {},
+            type: "POST",
+            url: `/api/comments/${postId}`,
+            data: {token},
             success: function (response) {
-                console.log(response['comments']);
-                for (const commentObject of response.comments) {
-                    makeComment(commentObject)
+                const comments = response['comments'];
+                const tokenUserId = response['userId']; //response['userId']가 존재하지 않을 경우 undefined를 설정
+
+                for (const commentObject of comments) {
+                    makeComment(commentObject, tokenUserId)
                 }
 
             },
             error: function (error) {
-                // console.log(error);
-                console.log(error.responseJSON.errorMessage);
-
+                console.log(error);
+                console.error(error.responseJSON.errorMessage);
             },
         });
     }
 
-    function makeComment(commentObject) {
-        const {commentId, nickname, comment} = commentObject;
+    function modifyCommentShow(commentId) {
+        $(`#comment${commentId}`).hide()
+        $(`#commentIcon${commentId}`).hide()
 
-        const temp_html = `<tr>
+        $(`#commentDiv${commentId}`).show()
+
+        const commentText = $(`#comment${commentId}`).text().trim();
+        $(`#commentInput${commentId}`).val(commentText)
+    }
+
+    // TODO 댓글 수정을 다른것에도 눌렀다면 꺼지는건? / 프론트가 하겠지 ~
+    function modifyCommenthide(commentId) {
+        $(`#comment${commentId}`).show()
+        $(`#commentIcon${commentId}`).show()
+
+        $(`#commentDiv${commentId}`).hide()
+    }
+
+    function modifyComment(commentId) {
+        const comment = $(`#commentInput${commentId}`).val()
+        if (!comment) {
+            alert("댓글 내용이 존재하지 않습니다.")
+            return;
+        }
+
+        $.ajax({
+            type: "PATCH",
+            url: `/api/comment/${commentId}`,
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            data: {comment},
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (error) {
+                console.error(error.responseJSON.errorMessage);
+            },
+        });
+
+        $(`#comment${commentId}`).text(comment)
+        modifyCommenthide(commentId)
+    }
+
+    function deleteComment(commentId) {
+        if (confirm("댓글을 삭제하시겠습니까?")) {
+            $.ajax({
+                type: "DELETE",
+                url: `/api/comment/${commentId}`,
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`
+                },
+                data: {},
+                success: function (response) {
+                    $(`#commentBody${commentId}`).hide()
+                },
+                error: function (error) {
+                    console.error(error.responseJSON.errorMessage);
+                    alert(error.responseJSON.errorMessage)
+                },
+            });
+        }
+
+    }
+
+    function makeComment(commentObject, tokenUserId) {
+        const {commentId, nickname, comment, userId} = commentObject;
+
+        // TODO 왜 append가 else 밖에 있을때에도 실행되지 않을까?
+        // TODO 만약 해커가 html을 해킹해 onclick 함수의 내부 값을 수정해서 요청한다면 어떤 오류가 발생할 것인가?
+        // onclick="deleteComment(${commentId})"
+        if (userId == tokenUserId) {
+            const temp_html = `
+            <tr id="commentBody${commentId}">
                 <td scope="col">${nickname}</td>
-                <td scope="col" id="Comment${commentId}">${comment}</td>
+                <td scope="col" id="comment${commentId}">${comment}
+                </td>
+                <td id="commentIcon${commentId}">
+                    <i class="fa fa-pencil" aria-hidden="true" onclick="modifyCommentShow(${commentId})"></i>
+                    <i class="fa fa-times" aria-hidden="true" onclick="deleteComment(${commentId})"></i>
+                </td>
+
+                <td colspan="2">
+                <div id="commentDiv${commentId}" class="input-group mb-3" style="display: none">
+                  <input id="commentInput${commentId}" type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="modifyComment(${commentId})">저장</button>
+                  </div>
+                </div>
+                </td>
             </tr>`
-        $('#commentTableBody').append(temp_html)
+            $('#commentTableBody').append(temp_html)
+
+        } else {
+            const temp_html = `<tr>
+                <td scope="col">${nickname}</td>
+                <td scope="col">${comment}</td>
+                <td></td>
+            </tr>`
+            $('#commentTableBody').append(temp_html)
+        }
+
     }
 
     function writeComment() {
         const comment = $('#comment').val()
         const postId = location.pathname.split("/")[2]
+
+        if(!comment)
+        {
+            alert("댓글 내용을 입력 해주세요.")
+        }
         $.ajax({
             type: "POST",
             url: `/api/write/comment/${postId}`,
@@ -84,19 +192,35 @@
             data: {comment},
             success: function (response) {
                 console.log(`writeComment:  ${response}`);
+
+                location.href = location.href
+                history.go(0);
             },
             error: function (error) {
-                console.log(`writeComment:  ${error}`);
+                alert(error.responseJSON.errorMessage)
             },
         });
     }
+
+    //class에 추가해야 사용가능하다.
+    $(document).on("click", ".modalSaveChange", function () {
+        // var myBookId = $(this).data('id');
+        // $(".modal-body #bookId").val( myBookId );
+        console.log("Hello Click modalSaveChange");
+        // As pointed out in comments,
+        // it is unnecessary to have to manually call the modal.
+        // $('#addBookDialog').modal('show');
+    });
+
 
 </script>
 <body>
 
 <div>
 
+
     <div class="post-body">
+
         <div>
             <button type="button" class="btn btn-primary" onclick="modifyPost()">수정</button>
             <button type="button" class="btn btn-secondary" onclick="location.href='/'">취소</button>
@@ -115,10 +239,13 @@
         <table class="table">
             <thead class="thead-light">
             <colgroup>
-                <col style="width:15%"/>
-                <col style="width:85%"/>
+                <col style="width:10%"/>
+                <col style="width:80%"/>
+                <col style="width:10%"/>
             </colgroup>
             </thead>
+
+
             <tbody id="commentTableBody">
 
             </tbody>
@@ -129,7 +256,7 @@
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">Comment</span>
             </div>
-            <input type="text" class="form-control" placeholder="Comment" aria-label="Username"
+            <input type="text" class="form-control" aria-label="Username"
                    aria-describedby="basic-addon1" id="comment">
             <button type="button" class="btn btn-primary" onclick="writeComment()">작성</button>
 
