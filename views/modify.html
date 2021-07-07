@@ -31,12 +31,35 @@
 
 </style>
 <script>
+    const user = getSelf(function (user) {
+        return user
+    })
 
     $(document).ready(function () {
+
     });
 
 
     function modifyPost() {
+
+        const postId = location.pathname.split('/')[2]
+        const title = $('#title').val()
+        const content = $('#content').val()
+
+        $.ajax({
+            type: "PATCH",
+            url: `/modify/${postId}`,
+            headers: {
+                authorization: `Bearer ${localStorage.getItem("token")}`
+            },
+            data: {title, content},
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (error) {
+                alert(error.responseJSON.errorMessage)
+            },
+        });
 
     }
 
@@ -51,14 +74,13 @@
             <button type="button" class="btn btn-secondary" onclick="location.href='/'">취소</button>
         </div>
 
-        <label for="alert_title">Content</label>
-        <div class="alert alert-secondary" role="alert" id="alert_title">
-            {{post.title}}
-        </div>
+        <label for="title">Content</label>
+        <input id="title" type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1"
+               value="{{post.title}}">
 
         <div class="form-group">
             <label for="content">Content</label>
-            <textarea class="form-control" id="content" rows="10" disabled>{{post.content}}</textarea>
+            <textarea class="form-control" id="content" rows="10">{{post.content}}</textarea>
         </div>
 
 

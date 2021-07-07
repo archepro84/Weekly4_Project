@@ -37,12 +37,13 @@
     // TODO userId를 html을 실행시킬 때 마다 무조건 가져와야 하는걸까?
     // TODO 서버와 통신이 너무 많아지는게 아닌가?
 
+    let userId;
     $(document).ready(function () {
-        // if (localStorage.getItem("token")) {
-        //     $('#commentWriteBody').removeClass('disabledButton')
-        // }
+        getSelf(function (user) {
+            userId = user.userId;
+            $(`#btnModify${userId}`).show()
+        })
         get_comment()
-
     });
 
     function get_comment() {
@@ -62,10 +63,8 @@
                 for (const commentObject of comments) {
                     makeComment(commentObject, tokenUserId)
                 }
-
             },
             error: function (error) {
-                console.log(error);
                 console.error(error.responseJSON.errorMessage);
             },
         });
@@ -209,6 +208,11 @@
         }
     }
 
+    function modifyPost() {
+        const postId = location.pathname.split("/")[2]
+        location.href = `/modify/${postId}`
+    }
+
 </script>
 <body>
 
@@ -218,7 +222,9 @@
     <div class="post-body">
 
         <div>
-            <button type="button" class="btn btn-primary" onclick="modifyPost()">수정</button>
+            <button id="btnModify{{post.userId}}" type="button" class="btn btn-primary" onclick="modifyPost()"
+            style="display:none">수정
+            </button>
             <button type="button" class="btn btn-secondary" onclick="location.href='/'">취소</button>
         </div>
 

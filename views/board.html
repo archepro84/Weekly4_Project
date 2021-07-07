@@ -33,14 +33,14 @@
     $(document).ready(function () {
         // 토큰이 있을 경우 로그인 기능 hide
         if (localStorage.getItem("token")) {
-            console.log("Yes Token");
+            // console.log("Yes Token");
             getSelf(function () {
                 $('#btn_login').hide()
                 $('#btn_logout').show()
             })
         } else {
             // 토큰이 없을 경우 게시글 작성 hide
-            console.log("No Token");
+            // console.log("No Token");
             $('#btn_post').hide()
         }
         get_posts();
