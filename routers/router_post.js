@@ -11,6 +11,30 @@ const authMiddleware = require("../middlewares/auth_middleware");
 const connection = require("../assets/mySqlLib")
 
 
+router.get('/posts', async (req, res) => {
+    // // 앞에 10개는 받환받지 않고 넘긴 뒤 2개의 항목만 반환한다.
+    // Project.findAll({ offset: 10, limit: 2 })
+
+    const userId_join = `SELECT p.postId, p.userId, u.nickname, p.title, p.content, p.createdAt, p.updatedAt
+    FROM Posts AS p
+    JOIN Users AS u
+    ON p.userId = u.userId
+    Order By p.postId DESC`;
+
+    connection.query(userId_join, function (error, posts, fields) {
+        if (error) {
+            console.log(error);
+            res.status(400).send({
+                    errorMessage: "Posts 값들이 존재하지 않습니다."
+                }
+            )
+            return;
+        }
+        res.send({posts})
+
+    });
+});
+
 router.get('/:postId', async (req, res) => {
     //TODO 자기자신의 userId는 어떠한 방식으로 알 수 있을까?
     const postId = req.params.postId;
@@ -19,8 +43,7 @@ router.get('/:postId', async (req, res) => {
             return posts['dataValues']
         });
 
-
-    res.render("post",{post})
+    res.render("post", {post})
 });
 
 

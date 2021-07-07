@@ -1,4 +1,3 @@
-
 function getSelf(callback) {
     $.ajax({
         type: "GET",
@@ -9,9 +8,10 @@ function getSelf(callback) {
         data: {},
         success: function (response) {
             callback(response.user);
-            console.log("users/me");
         },
-        error: function (xhr, status, error) {
+        // error: function (xht,status, error) {
+        error: function (error) {
+            const {status} = error;
             if (status == 401) {
                 alert("로그인이 필요 합니다.")
             } else {

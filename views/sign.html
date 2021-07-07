@@ -51,7 +51,7 @@
 
         $.ajax({
             type: "POST",
-            url: "/api/sign",
+            url: "/sign",
             data: {nickname, password, confirm},
             success: function (response) {
                 location.href = "/"

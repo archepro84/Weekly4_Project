@@ -1,12 +1,13 @@
 const express = require("express")
 const Http = require("http");
 const socketIo = require("socket.io");
-const path = require("path")
 const router = require("./routers/router");
 const router_post = require("./routers/router_post")
 const router_comment = require("./routers/router_comment")
+const router_write = require("./routers/router_write")
+const router_login = require("./routers/router_login")
+const router_sign = require("./routers/router_sign")
 const nunjucks = require("nunjucks");
-const authMiddleware = require("./middlewares/auth_middleware")
 
 const app = express();
 const http = Http.createServer(app);
@@ -17,23 +18,11 @@ nunjucks.configure('views', {
     watch: true,
 })
 
-
 app.get('/', (req, res) => {
     res.render("board")
 });
 
-app.get('/login', (req, res) => {
-    res.render("login")
-});
-
-app.get('/sign', (req, res) => {
-    res.render("sign")
-});
-
-app.get('/write', authMiddleware, (req, res) => {
-    res.render("write")
-});
-app.get('/error',  (req, res) => {
+app.get('/error', (req, res) => {
     res.render("error")
 });
 
@@ -41,6 +30,9 @@ app.get('/error',  (req, res) => {
 app.use("/api", express.urlencoded({extended: false}), router);
 app.use("/post", express.urlencoded({extended: false}), router_post);
 app.use("/comment", express.urlencoded({extended: false}), router_comment)
+app.use("/write", express.urlencoded({extended: false}), router_write)
+app.use("/sign", express.urlencoded({extended: false}), router_sign)
+app.use("/login", express.urlencoded({extended: false}), router_login)
 app.use(express.static("assets"));
 
 http.listen(4911, () => {
