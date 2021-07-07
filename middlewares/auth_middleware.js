@@ -4,16 +4,18 @@ const tokenKey = "weekly4_Project_key"
 
 module.exports = (req, res, next) => {
     try {
+        // console.log(res);
+        
         const {authorization} = req.headers;
         const [tokenType, tokenValue] = authorization.split(' ');
         if (tokenType !== 'Bearer') {
-            res.status(401).send({
-                errorMessage: "로그인 후 사용하세요.",
-            });
+            // res.status(401).send({
+            //     errorMessage: "로그인 후 사용하세요.",
+            // });
+            res.redirect("/error")
             return;
         }
         const {userId} = jwt.verify(tokenValue, tokenKey);
-        // console.log(userId);
         //promise
         Users.findByPk(userId)
             .then((user) => {
@@ -22,9 +24,10 @@ module.exports = (req, res, next) => {
                 next();
             });
     } catch (err) {
-        res.status(401).send({
-            errorMessage: "로그인 후 사용하세요.",
-        });
+        // res.status(401).send({
+        //     errorMessage: "로그인 후 사용하세요.",
+        // });
+        res.redirect("/error")
         return;
     }
 }

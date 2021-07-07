@@ -38,9 +38,9 @@
     // TODO 서버와 통신이 너무 많아지는게 아닌가?
 
     $(document).ready(function () {
-        if (localStorage.getItem("token")) {
-            $('#commentWriteBody').removeClass('disabledButton')
-        }
+        // if (localStorage.getItem("token")) {
+        //     $('#commentWriteBody').removeClass('disabledButton')
+        // }
         get_comment()
 
     });
@@ -179,9 +179,9 @@
         const comment = $('#comment').val()
         const postId = location.pathname.split("/")[2]
 
-        if(!comment)
-        {
+        if (!comment) {
             alert("댓글 내용을 입력 해주세요.")
+            return;
         }
         $.ajax({
             type: "POST",
@@ -211,6 +211,13 @@
         // it is unnecessary to have to manually call the modal.
         // $('#addBookDialog').modal('show');
     });
+
+    function loginCheck() {
+        if (!localStorage.getItem("token")) {
+            alert("로그인이 필요한 기능입니다.")
+            location.href = "/login"
+        }
+    }
 
 
 </script>
@@ -252,12 +259,12 @@
         </table>
 
         <div/>
-        <div class="input-group mb-3 disabledButton" id="commentWriteBody">
+        <div class="input-group mb-3" id="commentWriteBody">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">Comment</span>
             </div>
             <input type="text" class="form-control" aria-label="Username"
-                   aria-describedby="basic-addon1" id="comment">
+                   aria-describedby="basic-addon1" id="comment" onclick="loginCheck()">
             <button type="button" class="btn btn-primary" onclick="writeComment()">작성</button>
 
         </div>

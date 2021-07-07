@@ -33,6 +33,9 @@ app.get('/sign', (req, res) => {
 app.get('/write', authMiddleware, (req, res) => {
     res.render("write")
 });
+app.get('/error',  (req, res) => {
+    res.render("error")
+});
 
 // TODO 메인에서 app.get을 "/"만 남긴채 나머지 login, sign을 라우터로 전부 빼버릴까?
 app.use("/api", express.urlencoded({extended: false}), router);
