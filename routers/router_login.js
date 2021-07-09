@@ -24,13 +24,20 @@ const loginSchema = Joi.object({
 
 router.post('/', async (req, res) => {
     try {
+        // console.log(req.body);
+        // console.log(req.body.nickname);
         const {nickname, password} = await loginSchema.validateAsync(req.body);
+        // console.log(`Hello nickname : ${nickname}, password : ${password}`);
 
+        // console.log("HEllo");
+        // console.log(nickname, password);
         const user = await Users.findOne({
             where: {
                 [Op.and]: [{nickname}, {password}]
             }
         })
+
+
         if (user.length == 0) {
             res.status(412).send({
                 errorMessage: "닉네임 또는 패스워드를 확인해주세요"

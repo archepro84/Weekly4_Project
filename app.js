@@ -8,6 +8,7 @@ const router_write = require("./routers/router_write")
 const router_login = require("./routers/router_login")
 const router_sign = require("./routers/router_sign")
 const router_modify = require("./routers/router_modify")
+
 const nunjucks = require("nunjucks");
 
 const app = express();
@@ -27,7 +28,6 @@ app.get('/error', (req, res) => {
     res.render("error")
 });
 
-// TODO 메인에서 app.get을 "/"만 남긴채 나머지 login, sign을 라우터로 전부 빼버릴까?
 app.use("/api", express.urlencoded({extended: false}), router);
 app.use("/post", express.urlencoded({extended: false}), router_post);
 app.use("/comment", express.urlencoded({extended: false}), router_comment)
@@ -38,7 +38,6 @@ app.use("/modify", express.urlencoded({extended: false}), router_modify)
 
 app.use(express.static("assets"));
 
-http.listen(4911, () => {
-    console.log(`Start listen Server `);
 
-});
+
+module.exports = http

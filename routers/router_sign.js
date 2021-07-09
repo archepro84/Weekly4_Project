@@ -23,11 +23,16 @@ const userSchema = Joi.object({
 // TODO SQL인젝션에 관련된 필터를 할 수 없을까?
 router.post('/', async (req, res) => {
     try {
+        // console.log(req.body);
+        // console.log(req.body['Hello']);
+        // console.log(req);
+
         //시작과 끝이 a-zA-Z0-9글자로 3 ~ 255개의 단어로 구성되어야 한다.
         const re_nickname = /^[a-zA-Z0-9]{3,255}$/;
         const re_password = /^[a-zA-Z0-9]{4,255}$/;
 
         const {nickname, password, confirm} = await userSchema.validateAsync(req.body)
+        console.log(nickname, password);
 
         if (password !== confirm) {
             res.status(412).send({
@@ -53,7 +58,7 @@ router.post('/', async (req, res) => {
             });
             return;
         }
-
+        console.log("Hello");
         const user = await Users.findAll({
             where: {nickname}
             // [Op.or]: [{nickname}],
@@ -70,6 +75,7 @@ router.post('/', async (req, res) => {
         console.log(`${nickname} 님이 가입하셨습니다.`);
         res.status(200).send({result: "Clear"})
     } catch (err) {
+        console.error(err);
         res.status(400).send({
             errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
         });

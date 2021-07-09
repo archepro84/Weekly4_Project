@@ -14,6 +14,7 @@ const connection = require("../assets/mySqlLib")
 router.get('/posts', async (req, res) => {
     // // 앞에 10개는 받환받지 않고 넘긴 뒤 2개의 항목만 반환한다.
     // Project.findAll({ offset: 10, limit: 2 })
+    console.log(req.query);
 
     const userId_join = `SELECT p.postId, p.userId, u.nickname, p.title, p.content, p.createdAt, p.updatedAt
     FROM Posts AS p
