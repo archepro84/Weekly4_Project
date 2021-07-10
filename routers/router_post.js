@@ -32,8 +32,8 @@ router.get('/posts', async (req, res) => {
             return;
         }
         res.send({posts})
-
     });
+
 });
 
 router.get('/:postId', async (req, res) => {

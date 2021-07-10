@@ -39,10 +39,13 @@
 
     let userId;
     $(document).ready(function () {
-        getSelf(function (user) {
-            userId = user.userId;
-            $(`#btnModify${userId}`).show()
-        })
+        // 비회원, 회원 전부 볼 수 있어야하기 때문에 에러 발생을 나지 않게 해야한다.
+        if (localStorage.getItem("token")) {
+            getSelf(function (user) {
+                userId = user.userId;
+                $(`#btnModify${userId}`).show()
+            })
+        }
         get_comment()
     });
 
@@ -223,7 +226,7 @@
 
         <div>
             <button id="btnModify{{post.userId}}" type="button" class="btn btn-primary" onclick="modifyPost()"
-            style="display:none">수정
+                    style="display:none">수정
             </button>
             <button type="button" class="btn btn-secondary" onclick="location.href='/'">취소</button>
         </div>

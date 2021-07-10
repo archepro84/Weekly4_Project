@@ -13,28 +13,6 @@ const connection = require("../assets/mySqlLib");
 // TODO router에 전역변수로 암호화 키값을 넣어줘도 괜찮을까?
 const tokenKey = "weekly4_Project_key"
 
-// router.get('/:postId', async (req, res) => {
-//     const userId_join = `SELECT c.userId, u.nickname, c.comment, c.createdAt, c.updatedAt
-//     FROM Comments AS c
-//     JOIN Users AS u
-//     ON c.userId = u.userId
-//     Order By c.postId ASC`;
-//
-//     connection.query(userId_join, function (error, comments, fields) {
-//         if (error) {
-//             console.log(error);
-//             res.status(400).send({
-//                     errorMessage: "Comments 값들이 존재하지 않습니다."
-//                 }
-//             )
-//             return;
-//         }
-//         console.log(comments);
-//         res.send({comments})
-//     });
-// });
-
-
 function getUserId(token) {
     try {
         // TODO tokenKey로 검출된 데이터는 정상적인 데이터라고 가정한다.
